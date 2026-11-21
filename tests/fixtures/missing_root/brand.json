@@ -1,0 +1,7 @@
+{
+  "brand": "Missing root",
+  "rules_version": "test",
+  "roots": {"engine": "../no_such_folder"},
+  "rules": [],
+  "checkers": {"text": [["python", "{engine}/tools/check.py", "{file}"]]}
+}

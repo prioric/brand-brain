@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+log/
+# Private brand folders and local tests stay on this machine.
+firefox/
+prioric/
+test_server.py
+test_prioric.py

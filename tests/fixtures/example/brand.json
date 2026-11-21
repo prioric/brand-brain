@@ -1,0 +1,16 @@
+{
+  "brand": "Alder Pipes",
+  "owner": "Alder Pipes Ltd",
+  "rules_version": "test",
+  "read_on": "2026-11-21",
+  "rules": [
+    {"id": "voice-01", "area": "voice", "rule": "Write short sentences a plumber would say on site.", "source": "invented for the test", "audiences": ["all"], "status": "current"},
+    {"id": "naming-01", "area": "naming", "rule": "Write Alder Pipes as two words, both capitalized.", "source": "invented for the test", "audiences": ["all"], "status": "current"}
+  ],
+  "colors": [{"hex": "#2B4C3F", "name": "Alder green", "use": "Headlines"}],
+  "claims": [{"id": "claim-01", "claim": "Our copper pipes carry a 25 year warranty.", "proof_url": "https://example.com/warranty", "read_on": "2026-11-21", "expires": null}],
+  "claim_words": "\\b(warranty|longest|strongest|\\d+ ?year)\\b",
+  "names": {"correct": ["Alder Pipes"], "wrong": ["AlderPipes", "Alder pipes"]},
+  "banned_phrases": [{"phrase": "leak-proof", "why": "No pipe joint is leak-proof; legal asked us to drop it."}],
+  "owners": {"default": "the Alder Pipes brand team"}
+}

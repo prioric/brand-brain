@@ -1,0 +1,8 @@
+{
+  "brand": "Stub",
+  "rules_version": "test",
+  "rules": [],
+  "checkers": {
+    "text": [["python", "{brand}/checkers/stub.py", "{file}"], ["python", "{brand}/checkers/always_pass.py", "{file}"]]
+  }
+}

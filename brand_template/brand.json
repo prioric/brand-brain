@@ -1,0 +1,44 @@
+{
+  "_about": {
+    "how": "Copy this folder, give it your brand's short name, and fill each slot. Leave a slot empty when you have nothing for it. Delete this _about block when you are done.",
+    "brand": "Your brand's name, as you write it.",
+    "owner": "The company that owns the brand.",
+    "rules_version": "A date and a number, such as 2026-11-21.1. Change it at every edit; the server writes it beside every answer and every log line.",
+    "read_on": "The day you read the sources below.",
+    "roots": "Folders outside this one that a checker or an asset lives in, by name, each relative to this folder. Example: {\"tools\": \"../../our-brand-tools\"}. Write {tools} in a checker command or an asset path to use one.",
+    "rules": "One object per rule: id, area (positioning, voice, logo, color, type, layout, naming or legal), rule (one sentence to follow), source (the file or address it comes from), audiences ([\"all\"], or staff, partner, agency), status (current or old).",
+    "colors": "One object per approved color: hex (#RRGGBB), name, and where it may be used. check_draft fails any other hex in a text.",
+    "typefaces": "One object per typeface: name, use, and where the file is.",
+    "assets": "One object per approved file: id, kind (logo, wordmark, icon or template), name, and file or url.",
+    "claims": "One object per approved claim: id, claim (the exact sentence), proof_url (the public page that states it), read_on, expires (a date, or null). A sentence in a draft matches a claim when it uses 60% of the claim's words and adds no number.",
+    "claim_words": "A regular expression for the words that make a sentence a claim in your market, such as \\b(fastest|safest|only|\\d+ ?%)\\b. A sentence with one of them must match an approved claim, or a person looks at it.",
+    "word_limit": "Optional. A word you allow only a few times per piece, such as puns on your mascot: {\"name\", \"max\", \"pattern\" (a regular expression), \"why\"}. More than max sends the draft to a person.",
+    "names": "correct: the ways to write the brand. wrong: the ways never to write it; check_draft fails each one. partner_patterns: optional, a list of {pattern, rule, fix} tested only on partner and agency drafts.",
+    "banned_phrases": "One object per phrase: phrase, why, and skip_kind \"internal\" when the phrase is fine inside the company.",
+    "legal_lines": "One object per legal line: line, when it is needed, source_url.",
+    "owners": "Who answers a request_exception, per rule area, with a default.",
+    "checkers": "Your own checkers, per kind of draft: text, page or narration. Each is a command as a list of words. {file} is the draft, {brand} is this folder, and any root name is that root. Each command prints one JSON object: {\"verdict\": \"pass\" | \"fail\" | \"person_must_look\", \"failures\": [{\"rule\", \"found\", \"fix\"}], \"person_must_look\": [{\"sentence\", \"why\"}]}."
+  },
+  "brand": "",
+  "owner": "",
+  "rules_version": "",
+  "read_on": "",
+  "roots": {},
+  "rules": [],
+  "colors": [],
+  "typefaces": [],
+  "assets": [],
+  "claims": [],
+  "claim_words": "",
+  "word_limit": {},
+  "names": {
+    "correct": [],
+    "wrong": []
+  },
+  "banned_phrases": [],
+  "legal_lines": [],
+  "owners": {
+    "default": ""
+  },
+  "checkers": {}
+}
