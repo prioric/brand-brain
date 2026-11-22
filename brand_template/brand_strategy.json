@@ -1,0 +1,71 @@
+{
+  "_about": {
+    "how": "Copy this file into your brand folder beside brand.json. Each term below has its definition and its job. Put your brand's lines in its entries list. Leave a term's entries empty when you have nothing for it. Delete this _about block when you are done.",
+    "written_entry": "An entry you write out has four fields: id, text, why and used_for. Example: {\"id\": \"promise-01\", \"text\": \"The sentence itself.\", \"why\": \"The reason the brand keeps this line.\", \"used_for\": \"Where the line is used.\"}",
+    "audiences_entry": "An Audiences entry also has half. half is people when the entry names who the brand is for. half is thought when it says what that audience should think.",
+    "pointer_entry": "An entry can point at an item in brand.json instead: {\"id\": \"guidelines-01\", \"ref\": \"rules:voice-01\"}. The part before the colon is rules, claims, colors, typefaces or assets. The part after it is the item's id; a color is named by its hex, such as colors:#2B4C3F, and a typeface by its name. get_strategy returns the item's text, why and used_for in place of the pointer."
+  },
+  "brand": "",
+  "terms": {
+    "purpose": {
+      "definition": "Why the company exists.",
+      "job": "It says what the company exists for and what it will not do.",
+      "entries": []
+    },
+    "mission": {
+      "definition": "Who the company serves, plus the offer.",
+      "job": "It tells staff which business the company is in.",
+      "entries": []
+    },
+    "vision": {
+      "definition": "The world the company wants to help build, and the company's role in it.",
+      "job": "It gives people something to aim at.",
+      "entries": []
+    },
+    "values": {
+      "definition": "Core values are beliefs the company already acts on and keeps at a cost.",
+      "job": "It tells staff what to choose when the choice costs something.",
+      "entries": []
+    },
+    "way_of_winning": {
+      "definition": "The choices by which the company expects to beat competitors. Many documents call it the strategy.",
+      "job": "It names the choices the company makes and the ones it turns down.",
+      "entries": []
+    },
+    "audiences": {
+      "definition": "The people who must recognize the entity, and what each of them should think. Most documents call that thought the positioning.",
+      "job": "It says who the brand is for and gives each audience its reasons to pick this brand.",
+      "entries": []
+    },
+    "promise": {
+      "definition": "What those people can expect.",
+      "job": "It creates one clear expectation that the experience can keep or break.",
+      "entries": []
+    },
+    "personality": {
+      "definition": "The human traits the brand intends to show, in tone and in behavior.",
+      "job": "It makes the brand recognizable by its manner.",
+      "entries": []
+    },
+    "expressions": {
+      "definition": "Everything a person can sense that the entity intends to be recognized by: the name, the logo, the voice, the behaviors, the recognizable product features, a smell, a texture.",
+      "job": "It lets people recognize the brand at once.",
+      "entries": []
+    },
+    "structure": {
+      "definition": "How the names of the company, its businesses and its products relate.",
+      "job": "It shows people which company stands behind which product.",
+      "entries": []
+    },
+    "narrative": {
+      "definition": "The story the brand tells about itself: where it comes from, what it stands for and where it goes, told as one story.",
+      "job": "It lets staff and partners tell the brand the same way.",
+      "entries": []
+    },
+    "guidelines": {
+      "definition": "The rules for using the expressions: how the logo, the colors, the type, the pictures and the voice are applied.",
+      "job": "It lets everyone who makes something under the name apply the expressions the same way.",
+      "entries": []
+    }
+  }
+}

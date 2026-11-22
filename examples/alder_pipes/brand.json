@@ -1,0 +1,50 @@
+{
+  "brand": "Alder Pipes",
+  "owner": "Alder Pipes Ltd, an invented company",
+  "rules_version": "2026-11-22.1",
+  "read_on": "2026-11-22",
+  "roots": {},
+  "rules": [
+    {"id": "voice-01", "area": "voice", "rule": "Write short sentences a plumber would say on site.", "source": "Alder Pipes brand guide, page 2", "audiences": ["all"], "status": "current", "why": "Plumbers buy the pipes.", "used_for": "Every text."},
+    {"id": "naming-01", "area": "naming", "rule": "Write Alder Pipes as two words, both capitalized.", "source": "Alder Pipes brand guide, page 1", "audiences": ["all"], "status": "current", "why": "One spelling makes the name easy to find.", "used_for": "Every text."},
+    {"id": "logo-01", "area": "logo", "rule": "Keep a clear space around the logo as wide as the letter A.", "source": "Alder Pipes brand guide, page 3", "audiences": ["all"], "status": "current", "why": "The logo must read from across a building site.", "used_for": "Vans, packs and the site header."},
+    {"id": "legal-01", "area": "legal", "rule": "Partners write Alder Pipes® the first time the name appears.", "source": "Alder Pipes trademark note", "audiences": ["partner", "agency"], "status": "current", "why": "The trademark must be marked by others.", "used_for": "Partner and agency texts."},
+    {"id": "voice-old", "area": "voice", "rule": "Use the slogan Pipes for life.", "source": "Alder Pipes brand guide 2019", "audiences": ["all"], "status": "old", "why": "Replaced in 2024.", "used_for": "Nothing now."}
+  ],
+  "colors": [
+    {"hex": "#2B4C3F", "name": "Alder green", "use": "Headlines and the logo", "why": "The green of the first van.", "used_for": "Headlines and the logo."},
+    {"hex": "#F2EDE4", "name": "Sawdust", "use": "Backgrounds", "why": "It keeps the green easy to read.", "used_for": "Page and pack backgrounds."},
+    {"hex": "#B5652B", "name": "Copper", "use": "One accent per page", "why": "The copper of the pipe itself.", "used_for": "Buttons and price tags."}
+  ],
+  "typefaces": [
+    {"name": "Inter", "use": "All text", "file": "fonts/inter", "why": "It reads well on a phone.", "used_for": "Body text and headlines."}
+  ],
+  "assets": [
+    {"id": "logo-01", "kind": "logo", "name": "Logo, green", "file": "logos/alder-green.svg", "why": "The logo in the brand color.", "used_for": "Vans and the site header."},
+    {"id": "logo-02", "kind": "logo", "name": "Logo, white", "file": "logos/alder-white.svg", "why": "For dark photos.", "used_for": "Photos and video."}
+  ],
+  "claims": [
+    {"id": "claim-01", "claim": "Our copper pipes carry a 25 year warranty.", "proof_url": "https://example.com/warranty", "read_on": "2026-11-22", "expires": null, "why": "Buyers ask how long a pipe lasts.", "used_for": "Product pages."},
+    {"id": "claim-02", "claim": "Every Alder fitting is pressure tested before it leaves the plant.", "proof_url": "https://example.com/testing", "read_on": "2026-11-22", "expires": null, "why": "Plumbers fear a joint that fails after the wall is closed.", "used_for": "Trade adverts."},
+    {"id": "claim-old", "claim": "The strongest pipe of 2023.", "proof_url": "https://example.com/award-2023", "read_on": "2024-01-10", "expires": "2024-12-31", "why": "A 2023 trade award.", "used_for": "Nothing now."}
+  ],
+  "claim_words": "\\b(warranty|longest|strongest|tested|\\d+ ?year)\\b",
+  "word_limit": {},
+  "names": {
+    "correct": ["Alder Pipes", "Alder"],
+    "wrong": ["AlderPipes", "Alder pipes", "ALDER PIPES"],
+    "partner_patterns": [
+      {"pattern": "^(?![\\s\\S]*Alder Pipes®)[\\s\\S]*Alder Pipes", "rule": "trademark", "fix": "Write Alder Pipes® the first time the name appears."}
+    ]
+  },
+  "banned_phrases": [
+    {"phrase": "leak-proof", "why": "No pipe joint is leak-proof; legal asked us to drop it."},
+    {"phrase": "game-changer", "why": "Say what the pipe does: how long it lasts, how fast it fits."},
+    {"phrase": "the Alder family", "why": "Fine inside the company, odd to a buyer.", "skip_kind": "internal"}
+  ],
+  "legal_lines": [
+    {"line": "Alder Pipes is a registered trademark of Alder Pipes Ltd.", "when": "Every partner and agency text.", "source_url": "https://example.com/trademark"}
+  ],
+  "owners": {"default": "the Alder Pipes brand team", "legal": "the Alder Pipes legal desk"},
+  "checkers": {}
+}

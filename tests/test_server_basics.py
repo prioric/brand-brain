@@ -1,4 +1,4 @@
-"""Starts the brand server the way an AI tool does and tests every built-in check and the checker slot.
+"""Starts Brand BrAIn the way an AI tool does and tests every built-in check and the checker slot.
 
 It uses only the folders in this repo: the empty template, an invented brand (Alder Pipes) and stub
 checkers. Run from the repo folder: python tests/test_server_basics.py. Exit code 1 on a wrong answer.
@@ -23,7 +23,7 @@ def body(result) -> dict:
 
 def server(folder: str) -> StdioServerParameters:
     return StdioServerParameters(command=sys.executable, args=[str(REPO / "server.py"), folder],
-                                 env={"BRAND_MCP_USER": "test", "PYTHONUTF8": "1"})
+                                 env={"BRAND_BRAIN_USER": "test", "PYTHONUTF8": "1"})
 
 
 async def main() -> int:
@@ -38,7 +38,7 @@ async def main() -> int:
         async with ClientSession(read, write) as s:
             await s.initialize()
             tools = sorted(t.name for t in (await s.list_tools()).tools)
-            expect("the empty template starts and lists six tools", len(tools) == 6, ", ".join(tools))
+            expect("the empty template starts and lists seven tools", len(tools) == 7, ", ".join(tools))
 
     cases = [
         ("an approved claim passes", "Our copper pipes carry a 25 year warranty.", "pass"),
@@ -78,6 +78,11 @@ async def main() -> int:
         shutil.rmtree(REPO / folder / "log", ignore_errors=True)
     print(f"{len(bad)} failed")
     return 1 if bad else 0
+
+
+def test_server_basics() -> None:
+    """The same checks, for python -m pytest."""
+    assert asyncio.run(main()) == 0
 
 
 if __name__ == "__main__":

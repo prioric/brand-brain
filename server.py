@@ -1,11 +1,13 @@
-"""A brand MCP server.
+"""Brand BrAIn, an MCP server for one brand.
 
-It reads one brand folder (brand.json) and answers four questions from an AI tool:
-which rules apply, which approved file or value to use, which claims are approved,
-and whether a draft passes. It writes every call to log/calls.jsonl itself.
+It reads one brand folder (brand.json, and brand_strategy.json when the folder has one) and answers
+five questions from an AI tool: what the brand strategy says, which rules apply, which approved file
+or value to use, which claims are approved, and whether a draft passes. It writes every call to
+log/calls.jsonl itself. The environment variable BRAND_BRAIN_LOG_DIR moves the log to another folder.
 
 Run over stdio, for an AI tool on the same computer:  python server.py my_brand
 Run as a web address for an AI workspace:             python server.py my_brand --http
+The brand folder is a folder name beside server.py or an absolute path:  python server.py /srv/brands/my_brand
 """
 from __future__ import annotations
 
@@ -23,9 +25,13 @@ from pathlib import Path
 from mcp.server.mcpserver import MCPServer
 
 HERE = Path(__file__).resolve().parent
-BRAND_DIR = HERE / (sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else "brand_template")
+# The brand folder is a name beside this file or an absolute path.
+_ARG = Path(sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else "brand_template")
+BRAND_DIR = (_ARG if _ARG.is_absolute() else HERE / _ARG).resolve()
 BRAND = json.loads((BRAND_DIR / "brand.json").read_text(encoding="utf-8"))
-LOG_DIR = BRAND_DIR / "log"
+STRATEGY_FILE = BRAND_DIR / "brand_strategy.json"
+# The log sits in the brand folder unless BRAND_BRAIN_LOG_DIR names another folder.
+LOG_DIR = Path(os.environ["BRAND_BRAIN_LOG_DIR"]) if os.environ.get("BRAND_BRAIN_LOG_DIR") else BRAND_DIR / "log"
 NAME = BRAND["brand"]
 VERSION = BRAND["rules_version"]
 
@@ -46,11 +52,48 @@ PAUSE_MARK = re.compile(r"(?<!\S)(//?)(?!\S)")
 STRESS_MARK = re.compile(r"\b[A-Za-z]+(?:-[A-Za-z]+)+\b")
 EMPH_MARK = re.compile(r"\*([^*\s]+)\*")
 PAGE_START = re.compile(r"^\s*<(?:!doctype|html)\b", re.IGNORECASE)
+# The twelve terms of a brand strategy, in this order, each with its definition and its job. A brand's
+# own brand_strategy.json may repeat them; where it leaves one out, these words are served.
+TERMS = {
+    "purpose": ("Why the company exists.",
+                "It says what the company exists for and what it will not do."),
+    "mission": ("Who the company serves, plus the offer.",
+                "It tells staff which business the company is in."),
+    "vision": ("The world the company wants to help build, and the company's role in it.",
+               "It gives people something to aim at."),
+    "values": ("Core values are beliefs the company already acts on and keeps at a cost.",
+               "It tells staff what to choose when the choice costs something."),
+    "way_of_winning": ("The choices by which the company expects to beat competitors. "
+                       "Many documents call it the strategy.",
+                       "It names the choices the company makes and the ones it turns down."),
+    "audiences": ("The people who must recognize the entity, and what each of them should think. "
+                  "Most documents call that thought the positioning.",
+                  "It says who the brand is for and gives each audience its reasons to pick this brand."),
+    "promise": ("What those people can expect.",
+                "It creates one clear expectation that the experience can keep or break."),
+    "personality": ("The human traits the brand intends to show, in tone and in behavior.",
+                    "It makes the brand recognizable by its manner."),
+    "expressions": ("Everything a person can sense that the entity intends to be recognized by: the name, the "
+                    "logo, the voice, the behaviors, the recognizable product features, a smell, a texture.",
+                    "It lets people recognize the brand at once."),
+    "structure": ("How the names of the company, its businesses and its products relate.",
+                  "It shows people which company stands behind which product."),
+    "narrative": ("The story the brand tells about itself: where it comes from, what it stands for and where it "
+                  "goes, told as one story.",
+                  "It lets staff and partners tell the brand the same way."),
+    "guidelines": ("The rules for using the expressions: how the logo, the colors, the type, the pictures and "
+                   "the voice are applied.",
+                   "It lets everyone who makes something under the name apply the expressions the same way."),
+}
+# A ref entry points at one item of brand.json: the list it sits in, and the field that names the item.
+REF_KINDS = {"rules": "id", "claims": "id", "colors": "hex", "typefaces": "name", "assets": "id"}
+
 STOP = set("a an the and or of to in on for with your you our is are it its that this by from as at be we".split())
 
 server = MCPServer(
-    name=f"{NAME} brand server",
+    name=f"{NAME} Brand BrAIn",
     instructions=(
+        f"Before you write anything that speaks for {NAME}, call get_strategy and follow what it returns. "
         f"Before you write or design anything for {NAME}, call get_rules and get_claims. "
         "Use find_asset for every logo, color and typeface. Call check_draft on the finished text. "
         "On 'fail', fix the draft and check again. On 'person_must_look', tell the user which parts "
@@ -67,7 +110,7 @@ def _log(tool: str, **fields) -> None:
     LOG_DIR.mkdir(exist_ok=True)
     line = {
         "at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-        "who": os.environ.get("BRAND_MCP_USER", "unknown"),
+        "who": os.environ.get("BRAND_BRAIN_USER", "unknown"),
         "tool": tool,
         "rules_version": VERSION,
         **fields,
@@ -162,6 +205,83 @@ def run_checkers(kind: str, text: str) -> tuple[list[dict], list[dict], list[str
             elif verdict != "pass":
                 review.append({"sentence": "", "why": f"Checker {name} answered {verdict!r}."})
     return failures, review, names
+
+
+def _ref_value(kind: str, item: dict) -> str:
+    """The one value an AI tool uses from a referenced item."""
+    if kind == "rules":
+        return item.get("rule", "")
+    if kind == "claims":
+        return item.get("claim", "")
+    if kind == "colors":
+        return " ".join(x for x in (item.get("hex", ""), item.get("name", "")) if x)
+    if kind == "typefaces":
+        return item.get("name", "")
+    return item.get("file") or item.get("url", "")
+
+
+def _resolve(entry: dict) -> dict:
+    """Swaps a ref such as "rules:voice-01" for the item it names. A ref that names no item is marked broken."""
+    kind, _, key = entry["ref"].partition(":")
+    kind, key = kind.strip().lower(), key.strip()
+    field = REF_KINDS.get(kind)
+    if field is None:
+        return {**entry, "broken": True,
+                "why_broken": f"A ref can name rules, claims, colors, typefaces or assets. {kind!r} is none of them."}
+    for item in BRAND.get(kind, []):
+        if key.lower() in (str(item.get(field, "")).lower(), str(item.get("id", "")).lower()):
+            return {**entry, "resolved": {"kind": kind, "id": item.get(field) or item.get("id"),
+                                          "value": _ref_value(kind, item),
+                                          "why": item.get("why", ""), "used_for": item.get("used_for", "")}}
+    return {**entry, "broken": True, "why_broken": f"brand.json has no item {key!r} in {kind}."}
+
+
+def _strategy_terms(doc: dict) -> dict[str, dict]:
+    """The file's terms by key. The file holds them as an object keyed by term or as a list of {term, ...}."""
+    raw = doc.get("terms", {})
+    if isinstance(raw, list):
+        return {str(t.get("term", "")).lower(): t for t in raw if isinstance(t, dict)}
+    return {str(k).lower(): v for k, v in raw.items() if isinstance(v, dict)}
+
+
+@server.tool()
+def get_strategy(term: str = "all") -> dict:
+    """Return what the brand strategy says, for one term or all twelve.
+
+    Call it before you write anything that speaks for the brand.
+    term: purpose, mission, vision, values, way_of_winning, audiences, promise, personality,
+    expressions, structure, narrative, guidelines, or all.
+    Each term comes with its definition and its job. A term with no entries comes back with "empty": true.
+    An Audiences entry has half: people names who the brand is for, thought says what they should think.
+    An entry that points at brand.json (ref) comes back with the item under "resolved": its kind, id,
+    value, why and used_for. A ref that names no item comes back with "broken": true.
+    """
+    wanted = term.strip().lower().replace(" ", "_").replace("-", "_") or "all"
+    if wanted != "all" and wanted not in TERMS:
+        _log("get_strategy", term=term, returned=0, error="unknown term")
+        return {"brand": NAME, "error": f"A brand strategy has no term {term!r}. "
+                f"Ask for all, or for one of the twelve terms: {', '.join(TERMS)}.", "terms": list(TERMS)}
+    if not STRATEGY_FILE.exists():
+        _log("get_strategy", term=term, returned=0, error="no strategy file")
+        return {"brand": NAME, "rules_version": VERSION, "strategy_file": None,
+                "answer": f"{NAME} has no strategy file. The brand folder holds no brand_strategy.json. "
+                          "Use get_rules, get_claims and find_asset for what the brand has approved."}
+    try:
+        found = _strategy_terms(json.loads(STRATEGY_FILE.read_text(encoding="utf-8")))
+    except (json.JSONDecodeError, AttributeError, TypeError) as e:
+        _log("get_strategy", term=term, returned=0, error="unreadable strategy file")
+        return {"brand": NAME, "error": f"A machine cannot read brand_strategy.json as JSON: {e}"}
+
+    out, broken = [], []
+    for key in (TERMS if wanted == "all" else [wanted]):
+        here = found.get(key, {})
+        entries = [_resolve(e) if isinstance(e, dict) and e.get("ref") else e for e in here.get("entries", [])]
+        broken += [e.get("id", e["ref"]) for e in entries if isinstance(e, dict) and e.get("broken")]
+        out.append({"term": key, "definition": here.get("definition") or TERMS[key][0],
+                    "job": here.get("job") or TERMS[key][1], "empty": not entries, "entries": entries})
+    _log("get_strategy", term=term, returned=sum(len(t["entries"]) for t in out), broken=len(broken))
+    return {"brand": NAME, "rules_version": VERSION, "strategy_file": STRATEGY_FILE.name,
+            "terms": out, "broken_refs": broken}
 
 
 @server.tool()
@@ -322,7 +442,7 @@ def request_exception(what: str, why: str, rule_area: str = "") -> dict:
     with (LOG_DIR / "exceptions.jsonl").open("a", encoding="utf-8") as f:
         f.write(json.dumps({
             "ticket": ticket, "at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-            "who": os.environ.get("BRAND_MCP_USER", "unknown"), "what": what, "why": why,
+            "who": os.environ.get("BRAND_BRAIN_USER", "unknown"), "what": what, "why": why,
             "rule_area": rule_area, "rules_version": VERSION, "status": "open",
         }, ensure_ascii=False) + "\n")
     _log("request_exception", ticket=ticket, rule_area=rule_area)
@@ -355,4 +475,11 @@ def all_rules() -> str:
 
 
 if __name__ == "__main__":
+    if "--check" in sys.argv:
+        # A quick test for a person: read the brand files, print one line, stop. No AI tool needed.
+        strategy = "with a strategy file" if STRATEGY_FILE.exists() else "with no strategy file"
+        print(f"Brand BrAIn ready: {NAME or '(no brand name yet)'}, {len(BRAND.get('rules', []))} rules, "
+              f"{len(_live_claims())} live claims, {len(BRAND.get('colors', []))} colors, {strategy}."
+              + (f" Missing roots: {', '.join(MISSING_ROOTS)}." if MISSING_ROOTS else ""))
+        sys.exit(0)
     server.run("streamable-http" if "--http" in sys.argv else "stdio")

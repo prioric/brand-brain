@@ -1,0 +1,34 @@
+{
+  "brand": "Alder Pipes",
+  "terms": {
+    "purpose": {
+      "entries": [
+        {"id": "purpose-01", "text": "Keep water in the pipe for fifty years.", "why": "Invented for the test.", "used_for": "The about page."}
+      ]
+    },
+    "audiences": {
+      "entries": [
+        {"id": "audiences-01", "half": "people", "text": "Plumbers who fit pipes in new houses.", "why": "They pick the brand on site.", "used_for": "Trade adverts."},
+        {"id": "audiences-02", "half": "thought", "text": "Alder pipes fit the first time.", "why": "A refit costs the plumber a day.", "used_for": "Trade adverts."}
+      ]
+    },
+    "expressions": {
+      "entries": [
+        {"id": "expressions-01", "ref": "assets:logo-01"},
+        {"id": "expressions-02", "ref": "colors:#2B4C3F"},
+        {"id": "expressions-03", "ref": "typefaces:Inter"}
+      ]
+    },
+    "promise": {
+      "entries": [
+        {"id": "promise-01", "ref": "claims:claim-01"}
+      ]
+    },
+    "guidelines": {
+      "entries": [
+        {"id": "guidelines-01", "ref": "rules:voice-01"},
+        {"id": "guidelines-02", "ref": "rules:voice-99"}
+      ]
+    }
+  }
+}
